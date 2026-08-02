@@ -10,7 +10,7 @@ class Director(models.Model):
 class Movie(models.Model):
     title = models.CharField(max_length=100)
     year = models.IntegerField(default=2000)
-    director = models.ForeignKey(Director, on_delete=models.PROTECT, related_name='movies', default=1)
+    # director = models.ForeignKey(Director, on_delete=models.PROTECT, related_name='movies', default=1)
 
     def __str__(self):
         return self.title
