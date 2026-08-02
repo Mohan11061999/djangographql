@@ -1,7 +1,8 @@
 import graphene
 from graphene_django import DjangoObjectType
 from movies.api.models import Movie
-
+import graphql_jwt
+from graphql_jwt.decorators import login_required   
 
 class MovieType(DjangoObjectType):
     class Meta:
@@ -17,9 +18,14 @@ class Query:
     all_movies = graphene.List(MovieType)
     movie = graphene.Field(MovieType, id=graphene.Int())
 
+    @login_required
     def resolve_all_movies(self, info):
+        # user = info.context.user
+        # if not user.is_authenticated:
+        #     raise Exception("Authentication credentials were not provided")
         return Movie.objects.all()
 
+    @login_required
     def resolve_movie(self, info, id):
         if id is not None:
             return Movie.objects.get(id=id)
@@ -62,6 +68,9 @@ class MovieDeleteMutation(graphene.Mutation):
         return MovieDeleteMutation(ok=True)
 
 class Mutation:
+    token_auth = graphql_jwt.ObtainJSONWebToken.Field()
+    verify_token = graphql_jwt.Verify.Field()
+    refresh_token = graphql_jwt.Refresh.Field()
     create_movie = MovieCreateMutation.Field()
     update_movie = MovieUpdateMutation.Field()
     delete_movie = MovieDeleteMutation.Field()
@@ -112,4 +121,15 @@ class Mutation:
 #   }
 # }
 
+# mutation{
+#   tokenAuth(username:"mohan",password:"mohan@231953"){
+#     token
+#   }
+# }
 
+
+# mutation{
+#   verifyToken(token:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1vaGFuIiwiZXhwIjoxNzg1NjQ1MjcxLCJvcmlnSWF0IjoxNzg1NjQ0OTcxfQ.DpqttLpMm6yuhIUybU_Q13cpAJ-9-nfKvtTjV9b5pWQ"){
+#     payload
+#   }
+# }
