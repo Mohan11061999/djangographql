@@ -27,9 +27,9 @@ class MovieNode(DjangoObjectType):
 
 class Query:
     # all_movies = graphene.List(MovieType)
-    movie = graphene.Field(MovieType, id=graphene.Int())
-    all_movies = DjangoFilterConnectionField(MovieNode)
     # movie = relay.Node.Field(MovieNode)
+    all_movies = DjangoFilterConnectionField(MovieNode)
+    movie = graphene.Field(MovieType, id=graphene.Int())
 
     @login_required
     def resolve_all_movies(self, info):
@@ -166,6 +166,25 @@ class Mutation:
 
 # query{
 #   allMovies{
+#     edges{
+#       node{
+#         id
+#         title
+#         year
+#       }
+#     }
+#   }
+# }
+
+# # pagination
+# query allMovies{
+#   allMovies(first:10){
+#     pageInfo{
+#       startCursor
+#       endCursor
+#       hasNextPage
+#       hasPreviousPage
+#     }
 #     edges{
 #       node{
 #         id
