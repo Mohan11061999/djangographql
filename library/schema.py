@@ -1,6 +1,7 @@
 import graphene
 from graphene_django import DjangoObjectType
 from .models import Publisher, Author, Category, Book
+from graphene_django.debug import DjangoDebug
 
 
 class PublisherType(DjangoObjectType):
@@ -27,6 +28,7 @@ class BookType(DjangoObjectType):
         fields = "__all__"
 
 class Query(graphene.ObjectType):
+    debug = graphene.Field(DjangoDebug, name="_debug")
     all_books = graphene.List(BookType)
     book = graphene.Field(BookType, id=graphene.Int(required=True))
 
