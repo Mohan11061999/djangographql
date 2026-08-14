@@ -39,18 +39,6 @@ class BookQueryTest(TestCase):
         response = self.client.execute(query, variables={"id": self.book.id})
         self.assertIsNone(response.get("errors"))
         self.assertEqual(response["data"]["book"]["title"], "1984")
-
-    def test_single_book_query(self):
-        query = """
-            query GetBook($id: Int!) {
-              book(id: $id) {
-                title
-              }
-            }
-        """
-        response = self.client.execute(query, variables={"id": self.book.id})
-        self.assertIsNone(response.get("errors"))
-        self.assertEqual(response["data"]["book"]["title"], "1984")
     
     def test_book_not_found(self):
         query = """
