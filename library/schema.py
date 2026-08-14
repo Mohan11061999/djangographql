@@ -2,6 +2,8 @@ import graphene
 from graphene_django import DjangoObjectType
 from .models import Publisher, Author, Category, Book
 from graphene_django.debug import DjangoDebug
+import graphql_jwt
+from graphql_jwt.decorators import login_required
 
 
 class PublisherType(DjangoObjectType):
@@ -84,7 +86,8 @@ class CreateBook(graphene.Mutation):
         input = BookInput(required=True)
 
     book = graphene.Field(BookType)
-
+    
+    @login_required
     def mutate(root, info, input):
         book = Book.objects.create(
             title=input.title,
@@ -96,6 +99,7 @@ class CreateBook(graphene.Mutation):
         if input.category_ids:
             book.categories.set(input.category_ids)
         return CreateBook(book=book)
+        
 class UpdateBook(graphene.Mutation):
     class Arguments:
         id = graphene.Int(required=True)
@@ -143,6 +147,10 @@ class Mutation(graphene.ObjectType):
     update_book = UpdateBook.Field()
     delete_book = DeleteBook.Field()
 
+    token_auth = graphql_jwt.ObtainJSONWebToken.Field()
+    verify_token = graphql_jwt.Verify.Field()
+    refresh_token = graphql_jwt.Refresh.Field()
+    revoke_token = graphql_jwt.Revoke.Field()   # acts as "logout" — blacklists the refresh token
 
 
 # query {

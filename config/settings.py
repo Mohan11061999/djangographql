@@ -41,14 +41,21 @@ INSTALLED_APPS = [
     "graphene_django",
     "library",
     "debug_toolbar",
+    "graphql_jwt.refresh_token.apps.RefreshTokenConfig",
 ]
 
 GRAPHENE = {
     "SCHEMA": "config.schema.schema",
       "MIDDLEWARE": [
         "graphene_django.debug.DjangoDebugMiddleware",
+        "graphql_jwt.middleware.JSONWebTokenMiddleware",
     ],
 }
+
+AUTHENTICATION_BACKENDS = [
+    "graphql_jwt.backends.JSONWebTokenBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -142,4 +149,11 @@ MAILERS = {
     'default': {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
+}
+
+
+GRAPHQL_JWT = {
+    "JWT_VERIFY_EXPIRATION": True,
+    "JWT_EXPIRATION_DELTA": __import__("datetime").timedelta(minutes=5),
+    "JWT_LONG_RUNNING_REFRESH_TOKEN": True,
 }
