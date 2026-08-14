@@ -29,19 +29,29 @@ class BookType(DjangoObjectType):
 
 class Query(graphene.ObjectType):
     debug = graphene.Field(DjangoDebug, name="_debug")
-    all_books = graphene.List(BookType)
+    all_books = graphene.List(
+        BookType,
+        published_year=graphene.Int()
+    )
     book = graphene.Field(BookType, id=graphene.Int(required=True))
 
     all_authors = graphene.List(AuthorType)
     all_publishers = graphene.List(PublisherType)
     all_categories = graphene.List(CategoryType)
 
-    def resolve_all_books(root, info):
-        return (
+    def resolve_all_books(root, info, published_year=None):
+        queryset = (
             Book.objects
             .select_related("author", "publisher")
             .prefetch_related("categories")
         )
+
+        if published_year is not None:
+            queryset = queryset.filter(
+                published_year=published_year
+            )
+
+        return queryset
 
     def resolve_book(root, info, id):
         return (
